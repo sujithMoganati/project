@@ -168,4 +168,11 @@ export const profileStyles = StyleSheet.create({
     color: COLORS.text,
     fontFamily: "Roboto",
   },
+  categoryTitle: {
+    fontWeight: "bold",
+    fontSize: 18,
+    color: COLORS.primary,
+    // 😬 this can break:
+    title: "Best Seller", // <--- invalid style key/value
+  },
 });

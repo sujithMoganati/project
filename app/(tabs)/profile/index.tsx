@@ -203,7 +203,6 @@ const Profile = () => {
             <Text style={profileStyles.contactText}>My Orders</Text>
           </TouchableOpacity>
         </View>
-        ABOUT US
         <View style={profileStyles.contactSection}>
           <Text style={profileStyles.contactHeading}>About Us</Text>
           <TouchableOpacity

@@ -1,63 +1,70 @@
+import React, { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "expo-router";
+import { useRouter, usePathname, useRootNavigationState } from "expo-router";
 import { ActivityIndicator, View, Text } from "react-native";
 
 export default function Index() {
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const { isLoaded: userLoaded, user } = useUser();
   const pathname = usePathname();
+  const rootNavigationState = useRootNavigationState();
   const router = useRouter();
   const [checkingUser, setCheckingUser] = useState(true);
 
   useEffect(() => {
+    if (!rootNavigationState?.key) return; // Wait until layout is mounted
+
+    const inAuthGroup = pathname?.startsWith("/(auth)");
+
+    if (!isSignedIn && !inAuthGroup) {
+      console.log("Redirecting to login...");
+      setCheckingUser(false);
+      router.replace("/(auth)/login");
+      return;
+    }
+
     const checkUserDetails = async () => {
       if (!authLoaded || !userLoaded) return;
 
-      const inAuthGroup = pathname?.startsWith("/(auth)");
-      const hasCachedUser = !!user;
-
-      console.log("📍 Pathname:", pathname);
-      console.log("🔁 Redirect Check ->", {
-        isSignedIn,
-        hasCachedUser,
-        inAuthGroup,
-      });
-
-      if (!isSignedIn && !hasCachedUser && !inAuthGroup) {
-        router.replace("/(auth)/login");
-        return;
-      }
-
-      if (isSignedIn && hasCachedUser) {
+      if (isSignedIn && user) {
         try {
           const response = await fetch(
             `https://shopngo-backend.onrender.com/user/${user.id}`
           );
 
-          if (response.status === 200) {
-            console.log("✅ User exists in backend, navigating to /tabs");
+          if (response.ok) {
+            setCheckingUser(false);
             router.replace("/(tabs)");
           } else {
-            console.log("🆕 User not found, navigating to user details form");
+            setCheckingUser(false);
             router.replace("/(auth)/userdetails");
           }
         } catch (err) {
           console.error("Error checking user:", err);
-          router.replace("/(auth)/userdetails");
-        } finally {
           setCheckingUser(false);
+          router.replace("/(auth)/userdetails");
         }
       }
     };
 
     checkUserDetails();
-  }, [authLoaded, userLoaded, isSignedIn, user, pathname]);
+  }, [
+    authLoaded,
+    userLoaded,
+    isSignedIn,
+    user?.id,
+    pathname,
+    rootNavigationState?.key,
+  ]);
 
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="large" />
-      <Text>Loading...</Text>
-    </View>
-  );
+  if (!authLoaded || !userLoaded || checkingUser) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return null;
 }

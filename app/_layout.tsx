@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
-import { tokenCache } from "@/cache";
 import { StatusBar } from "react-native";
+import { tokenCache } from "@/cache";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
   throw new Error(
@@ -13,14 +13,14 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  console.log("Clerk Initialized Successfully!");
+
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
         <SafeAreaProvider>
-          <SafeAreaView style={{ flex: 1, backgroundColor: "#fce3b1" }}>
-            {/* Set Status Bar Notch Color */}
-            <StatusBar backgroundColor="#fce3b1" barStyle="dark-content" />
-
+          <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
+            <StatusBar backgroundColor="black" barStyle="dark-content" />
             <Stack screenOptions={{ headerShown: false }} />
           </SafeAreaView>
         </SafeAreaProvider>
