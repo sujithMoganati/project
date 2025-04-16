@@ -1,45 +1,82 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import React from "react";
+import { Tabs } from "expo-router";
+import { Ionicons, AntDesign, FontAwesome } from "@expo/vector-icons";
+import { COLORS } from "@/constants/theme";
+import { View, Image } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+    <View style={{ flex: 1 }}>
+      {/* Tab Navigator */}
+      <Tabs
+        screenOptions={{
+          tabBarShowLabel: true,
+          headerShown: false,
+          tabBarActiveTintColor: COLORS.info,
+          tabBarInactiveTintColor: COLORS.grey,
+          tabBarHideOnKeyboard: false,
+          tabBarStyle: {
+            backgroundColor: "#fce3b1",
+            borderTopColor: "#eee",
+            height: 70,
+            paddingTop: 8,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            overflow: "hidden",
+
+            // Shadow for elevation
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+            elevation: 8,
           },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarLabelStyle: {
+            fontSize: 14,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name="home" size={focused ? 30 : 25} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="categories"
+          options={{
+            tabBarLabel: "categories",
+            tabBarIcon: ({ color, focused }) => (
+              <AntDesign
+                name="appstore1"
+                size={focused ? 28 : 23}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="cart"
+          options={{
+            tabBarLabel: "Cart",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name="cart" size={focused ? 32 : 28} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarLabel: "Profile",
+            tabBarIcon: ({ color, focused }) => (
+              <FontAwesome name="user" size={focused ? 32 : 28} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+    </View>
   );
 }
